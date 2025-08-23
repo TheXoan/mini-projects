@@ -36,19 +36,27 @@ class WordController:
                         print("No hay temas aún! ⚠️")
                 case "3":
                     # Pido el tópic y luego voy pidiendo palabras e introduciéndolas
-                    continuar = "si"
-                    name_topic = input("Nombre del tópic: ")
-                    while continuar == "si":
-                        name_word = input("Nueva palabra: ")
-                        name_meaning = input("Significado: ")
-                        correcto = input(f"{name_word} se traduce como {name_meaning} es esto correcto? (si, no): ")
+                    name_topic = input("Nombre del tópic: ").strip()
+                    
+                    while True:
+                        
+                        name_word = input("Nueva palabra: ").strip()
+                        name_meaning = input("Significado: ").strip()
+                        
+                        correcto = input(f"{name_word} se traduce como {name_meaning} (si/no): ").strip()
                         if correcto.lower() == "si":
                             self.model.add_word(name_word, name_meaning, name_topic)
+                            print(f"✅ Palabra añadida")
                         else:
-                            print("Vuelve a escribir la palabra:")
-                        continuar = input("Quieres continuar introduciendo palabras (si, no): ")
+                            print("❌ Vuelve a escribir la palabra:")
+                            
+                        # Preguntar si continuar
+                        continuar = input("Quieres continuar introduciendo palabras (si/no): ").strip()
+                        if continuar != "si":
+                            print("Finalizando entrada de palabras...")
+                            break
                 case "0":
                     print("Saliendo...💀")
                     break
                 case _:
-                    print("Escoge una de las opciones válidas!")
+                    print("Escoge una de las opciones válidas! ❌❌❌")

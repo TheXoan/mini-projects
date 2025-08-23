@@ -5,3 +5,6 @@ __pycache__/
 # Entornos virtuales
 venv/
 .env/
+
+# La base de datos
+*.db
