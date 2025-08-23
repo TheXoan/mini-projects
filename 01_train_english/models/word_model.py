@@ -5,6 +5,8 @@ import os
 class WordModel:
     def __init__(self, db_path="01_train_english/database/words.db"):
         self.conn = sqlite3.connect(db_path)
+        # Esto permite que luego al acceder al valor obtenido en la consulta podamos filtrarlo por nombre de columna. **Más visual
+        self.conn.row_factory = sqlite3.Row
         self.cursor = self.conn.cursor()
         self.cursor.execute("""
         CREATE TABLE IF NOT EXISTS words(
@@ -30,4 +32,5 @@ class WordModel:
 # Visualizar todos los tópis disponibles
     def get_all_topis(self):
         self.cursor.execute("SELECT DISTINCT topic from words ORDER BY topic DESC")
-        return self.cursor.fetchall()
+        rows = self.cursor.fetchall()
+        return [row["topic"] for row in rows]
