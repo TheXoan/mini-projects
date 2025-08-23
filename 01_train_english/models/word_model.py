@@ -25,9 +25,9 @@ class WordModel:
         print("Palabra añadida correctamente")
         
 # Obtengo una palabra aleatoria filtrando por tema
-    def get_random_word(self, topic):
-        self.cursor.execute("SELECT * FROM words  WHERE topic = ? ORDER BY RANDOM() LIMIT 1",(topic,))
-        return self.cursor.fetchone()
+    def get_word_by_topic(self, topic):
+        self.cursor.execute("SELECT * FROM words WHERE topic = ?",(topic,))
+        return self.cursor.fetchall()
     
 # Visualizar todos los tópis disponibles
     def get_all_topis(self):

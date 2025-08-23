@@ -1,4 +1,5 @@
 from models.word_model import WordModel
+import random
 
 class WordController:
     def __init__(self):
@@ -19,12 +20,29 @@ class WordController:
             option = input("Elige una opción: ")
             
             match option:
+                # 1. Practicar un tema
                 case "1":
                     # Muestro todos los topics, y con el topic elegido llamo al método que comprueba las palabras
-                    # *** FALTA IMPLEMENTAR OBTENER LAS PALABRAS Y GUARDARLAS EN UNA LISTA CLAVE VALOR Y LUEGO IR PREGUNTANDO y eliminando de la lista***
                     print(self.model.get_all_topis())
+                    
                     topic_chose = input("Con que topic quieres jugar: ")
-                    self.model.check_word_spanish(topic_chose)
+                    palabras = self.model.get_word_by_topic(topic_chose)
+                    
+                    # Creo un diccionario clave valor y le asigno las palabras del topic
+                    palabras_topic = {}
+                    for row in palabras:
+                        palabras_topic[row['word']] = row['meaning']
+                    
+                    # Mientras haya palabras obtén una aleatoria y compara si el valor de esa clave aleatoria es la que acierta el usuario
+                    while palabras_topic.items():
+                        guess = random.choice(list(palabras_topic.keys()))
+                        user_try = input(f"Que significa {guess}: ")
+                        if user_try.lower() == palabras_topic[guess]:
+                            print(f"✅ Correcto!!! Una menos, te quedan: {len(palabras_topic) - 1}")
+                            del palabras_topic[guess]
+                        else:
+                            print(f"❌ La respuesta correcta era: {palabras_topic[guess]}")
+                # 2. Ver topics disponibles
                 case "2":
                     # Enumero todos los temas disponibles si los hay
                     topics = self.model.get_all_topis()
@@ -34,6 +52,7 @@ class WordController:
                             print(f"- {t}")
                     else:
                         print("No hay temas aún! ⚠️")
+                # 3. Añadir un nuevo tópic
                 case "3":
                     # Pido el tópic y luego voy pidiendo palabras e introduciéndolas
                     name_topic = input("Nombre del tópic: ").strip()
@@ -55,6 +74,7 @@ class WordController:
                         if continuar != "si":
                             print("Finalizando entrada de palabras...")
                             break
+                # 0. Salir
                 case "0":
                     print("Saliendo...💀")
                     break
