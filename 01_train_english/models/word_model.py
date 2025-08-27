@@ -4,9 +4,16 @@ import os
 # Crea la BBDD
 class WordModel:
     def __init__(self, db_path="01_train_english/database/words.db"):
+        
+        # Creo la carpeta dabatase si no existe
+        if not os.path.exists("01_train_english/database/"):
+            os.mkdir("01_train_english/database/")
+
         self.conn = sqlite3.connect(db_path)
+        
         # Esto permite que luego al acceder al valor obtenido en la consulta podamos filtrarlo por nombre de columna. **Más visual
         self.conn.row_factory = sqlite3.Row
+        
         self.cursor = self.conn.cursor()
         self.cursor.execute("""
         CREATE TABLE IF NOT EXISTS words(
@@ -16,7 +23,7 @@ class WordModel:
             topic TEXT NOT NULL
         ) 
         """)
-        self.conn.commit()    
+        self.conn.commit()  
 
 # Añado una palabra
     def add_word(self, word, meaning, topic):
