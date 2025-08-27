@@ -7,4 +7,4 @@ venv/
 .env/
 
 # La base de datos
-database\*.db
+words.db
