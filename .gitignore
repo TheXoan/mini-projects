@@ -7,4 +7,4 @@ venv/
 .env/
 
 # La base de datos
-database/words.db
+01_train_english\database\words.db
