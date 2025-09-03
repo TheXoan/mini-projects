@@ -35,11 +35,17 @@ class WordController:
                     
                     # Mientras haya palabras obtén una aleatoria y compara si el valor de esa clave aleatoria es la que acierta el usuario
                     while palabras_topic.items():
+                        
                         guess = random.choice(list(palabras_topic.keys()))
                         user_try = input(f"Que significa {guess}: ")
+                        # Compruebo la palabra que añade el usuario con el value del tópic
                         if user_try.lower() == palabras_topic[guess]:
-                            print(f"✅ Correcto!!! Una menos, te quedan: {len(palabras_topic) - 1}")
+                            # Como acabo de acertar elimino una palabra de la lista y compruebo si ya terminé
                             del palabras_topic[guess]
+                            if len(palabras_topic) == 0:
+                                print("Felicidades! Has terminado el tópic!")
+                            else:
+                                print(f"✅ Correcto!!! Una menos, te quedan: {len(palabras_topic)}")
                         else:
                             print(f"❌ La respuesta correcta era: {palabras_topic[guess]}")
                 # 2. Ver topics disponibles
