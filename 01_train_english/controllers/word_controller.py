@@ -1,88 +1,53 @@
-from models.word_model import WordModel
+import tkinter as tk
 import random
+from models.word_model import WordModel
+from views.word_view import WordView
 
 class WordController:
     def __init__(self):
         self.model = WordModel()
-
-    # Método para preguntar las palabras              
-    def ask_words(self, topic):
-        print("asdf")
+        self.root = tk.Tk()
+        self.view = WordView(self.root, self)
 
     def run(self):
-        while True:
-            print("\n----- Práctica de inglés -----")
-            print("1. Practicar un tema")
-            print("2. Ver topics disponibles")
-            print("3. Añadir un nuevo tópic")
-            print("0. Salir")
-            
-            option = input("Elige una opción: ")
-            
-            match option:
-                # 1. Practicar un tema
-                case "1":
-                    # Muestro todos los topics, y con el topic elegido llamo al método que comprueba las palabras
-                    print(self.model.get_all_topis())
-                    
-                    topic_chose = input("Con que topic quieres jugar: ")
-                    palabras = self.model.get_word_by_topic(topic_chose)
-                    
-                    # Creo un diccionario clave valor y le asigno las palabras del topic
-                    palabras_topic = {}
-                    for row in palabras:
-                        palabras_topic[row['word']] = row['meaning']
-                    
-                    # Mientras haya palabras obtén una aleatoria y compara si el valor de esa clave aleatoria es la que acierta el usuario
-                    while palabras_topic.items():
-                        
-                        guess = random.choice(list(palabras_topic.keys()))
-                        user_try = input(f"Que significa {guess}: ")
-                        # Compruebo la palabra que añade el usuario con el value del tópic
-                        if user_try.lower() == palabras_topic[guess]:
-                            # Como acabo de acertar elimino una palabra de la lista y compruebo si ya terminé
-                            del palabras_topic[guess]
-                            if len(palabras_topic) == 0:
-                                print("Felicidades! Has terminado el tópic!")
-                            else:
-                                print(f"✅ Correcto!!! Una menos, te quedan: {len(palabras_topic)}")
-                        else:
-                            print(f"❌ La respuesta correcta era: {palabras_topic[guess]}")
-                # 2. Ver topics disponibles
-                case "2":
-                    # Enumero todos los temas disponibles si los hay
-                    topics = self.model.get_all_topis()
-                    if topics:
-                        print("TOPICS: ")
-                        for t in topics:
-                            print(f"- {t}")
-                    else:
-                        print("No hay temas aún! ⚠️")
-                # 3. Añadir un nuevo tópic
-                case "3":
-                    # Pido el tópic y luego voy pidiendo palabras e introduciéndolas
-                    name_topic = input("Nombre del tópic: ").strip()
-                    
-                    while True:
-                        
-                        name_word = input("Nueva palabra: ").strip()
-                        name_meaning = input("Significado: ").strip()
-                        
-                        correcto = input(f"{name_word} se traduce como {name_meaning} (si/no): ").strip()
-                        if correcto.lower() == "si":
-                            self.model.add_word(name_word, name_meaning, name_topic)
-                            print(f"✅ Palabra añadida")
-                        else:
-                            print("❌ Vuelve a escribir la palabra:")
-                            
-                        # Preguntar si continuar
-                        continuar = input("Quieres continuar introduciendo palabras (si/no): ").strip()
-                        if continuar != "si":
-                            print("Finalizando entrada de palabras...")
-                            break
-                # 0. Salir
-                case "0":
-                    print("Saliendo...💀")
-                    break
-                case _:
-                    print("Escoge una de las opciones válidas! ❌❌❌")
+        self.root.mainloop()
+
+    # ---- Métodos que la vista llamará ----
+
+    def get_topics(self):
+        return self.model.get_all_topis()
+
+    def add_word(self, word, meaning, topic):
+        self.model.add_word(word, meaning, topic)
+
+    def start_practice(self, topic):
+        palabras = self.model.get_word_by_topic(topic)
+
+        # Crear diccionario palabra: significado
+        palabras_topic = {row['word']: row['meaning'] for row in palabras}
+
+        self.practice_loop(palabras_topic)
+
+    def practice_loop(self, palabras_topic):
+        if not palabras_topic:
+            self.view.show_message("Felicidades! Has terminado el topic!")
+            return
+
+        # Seleccionar palabra aleatoria
+        guess = random.choice(list(palabras_topic.keys()))
+
+        # Pedir al usuario con la vista
+        self.view.ask_meaning(
+            guess,
+            lambda user_try: self.check_answer(user_try, guess, palabras_topic)
+        )
+
+    def check_answer(self, user_try, guess, palabras_topic):
+        if user_try.lower().strip() == palabras_topic[guess]:
+            del palabras_topic[guess]
+            self.view.show_message(f"✅ Correcto! Quedan {len(palabras_topic)}")
+        else:
+            self.view.show_message(f"❌ La respuesta correcta era: {palabras_topic[guess]}")
+
+        # Continuar práctica
+        self.practice_loop(palabras_topic)
